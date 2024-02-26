@@ -1,6 +1,5 @@
 use std::{
-    io::{BufRead, BufReader, Write},
-    net::TcpListener,
+    io::Write, net::TcpListener
 };
 fn main() {
     println!("Hello, world!");
@@ -8,10 +7,10 @@ fn main() {
     let mut uri = String::new(); 
     let mut response: String = String::new(); 
     for mut stream in listener.incoming().flatten() {
-        let mut rdr = BufReader::new(&mut stream);
+        let mut rdr = std::io::BufReader::new(&mut stream);
         loop {
             let mut lmfao = String::new();
-            rdr.read_line(&mut lmfao).unwrap();
+            std::io::BufRead::read_line(&mut rdr, &mut lmfao).unwrap();
             if lmfao.trim().is_empty() {
                 break;
             }
@@ -21,7 +20,10 @@ fn main() {
                 println!("Requested URI: {}", uri);
             }
         }
+        
         response = format!("HTTP/1.1 200 OK\r\n\r\n{}", uri); // Interpolate uri using {}
         stream.write_all(response.as_bytes()).unwrap();
+        // stream.write_all(&read(uri).unwrap()).unwrap();
+
     }
 }
